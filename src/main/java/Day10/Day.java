@@ -1,4 +1,4 @@
-package main.java.Day10.Day9;
+package main.java.Day10;
 
 import main.java.Common.AbstractDay;
 import main.java.Common.InputUtils;
