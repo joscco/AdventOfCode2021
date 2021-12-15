@@ -10,7 +10,7 @@ public class Day extends AbstractDay {
 
     int height;
     int width;
-    Map<Tuple<Integer, Integer>, Integer> nodes;
+    int[][] nodes;
 
     public static void main(String[] args) {
         Day day = new Day();
@@ -26,19 +26,19 @@ public class Day extends AbstractDay {
         solveSecondQuestion();
     }
 
-    private Map<Tuple<Integer, Integer>, Integer> buildNodes(List<String> lines) {
-        Map<Tuple<Integer, Integer>, Integer> nodes = new HashMap<>();
+    private int[][] buildNodes(List<String> lines) {
+        int[][] nodes = new int[width][height];
         for (int y = 0; y < height; y++) {
             int[] values = Arrays.stream(lines.get(y).split("")).mapToInt(Integer::parseInt).toArray();
             for (int x = 0; x < width; x++) {
-                nodes.put(new Tuple<>(x, y), values[x]);
+                nodes[x][y] = values[x];
             }
         }
         return nodes;
     }
 
     private void solveFirstQuestion() {
-        long shortestDistance = findShortestBetween(nodes, new Tuple<>(0, 0), new Tuple<>(width - 1, height - 1));
+        long shortestDistance = findShortestBetween(new Tuple<>(0, 0), new Tuple<>(width - 1, height - 1));
         System.out.println("Part 1:");
         System.out.println(shortestDistance);
     }
@@ -47,55 +47,59 @@ public class Day extends AbstractDay {
         nodes = enlargeNodes(nodes);
         width *= 5;
         height *= 5;
-        long shortestDistance = findShortestBetween(nodes, new Tuple<>(0, 0), new Tuple<>(width - 1, height - 1));
+        long shortestDistance = findShortestBetween(new Tuple<>(0, 0), new Tuple<>(width - 1, height - 1));
         System.out.println("Part 2:");
         System.out.println(shortestDistance);
     }
 
-    private Map<Tuple<Integer, Integer>, Integer> enlargeNodes(Map<Tuple<Integer, Integer>, Integer> nodes) {
-        Map<Tuple<Integer, Integer>, Integer> newNodes = new HashMap<>();
-        for (Tuple<Integer, Integer> node : nodes.keySet()) {
-            for (int i = 0; i < 5; i++) {
-                for (int j = 0; j < 5; j++) {
-                    newNodes.put(new Tuple<>(i * width + node._0, j * height + node._1), wrap(nodes.get(node) + i + j));
+    private int[][] enlargeNodes(int[][] nodes) {
+        int[][] newNodes = new int[5*width][5*height];
+        for (int y = 0; y<height; y++) {
+            for(int x = 0; x<width;x++) {
+                for (int i = 0; i < 5; i++) {
+                    for (int j = 0; j < 5; j++) {
+                        newNodes[i * width + x][j * height + y] = wrap(nodes[x][y] + i + j);
+                    }
                 }
             }
-
         }
         return newNodes;
     }
 
-    private long findShortestBetween(Map<Tuple<Integer, Integer>, Integer> nodes, Tuple<Integer, Integer> start, Tuple<Integer, Integer> end) {
+    private long findShortestBetween(Tuple<Integer, Integer> start, Tuple<Integer, Integer> end) {
 
-        Map<Tuple<Integer, Integer>, Long> distances = new HashMap<>();
+        long[][] distances = new long[width][height];
         ComparatorByValue comparator = new ComparatorByValue(distances);
-        PriorityQueue<Tuple<Integer, Integer>> unvisited = new PriorityQueue<>(nodes.size(), comparator);
-        for (Tuple<Integer, Integer> node : nodes.keySet()) {
-            distances.put(node, (long) Integer.MAX_VALUE);
-            unvisited.add(node);
+        PriorityQueue<Tuple<Integer, Integer>> unvisited = new PriorityQueue<>(width*height, comparator);
+        for (int x= 0; x<width; x++) {
+            for(int y = 0; y<height;y++) {
+                distances[x][y] = Integer.MAX_VALUE;
+                unvisited.add(new Tuple<>(x,y));
+            }
         }
 
-        distances.replace(start, 0L);
+        distances[start._0][start._1] = 0L;
         Long timeStart = System.currentTimeMillis();
 
-        while (true) {
+        while (!unvisited.isEmpty()) {
             Tuple<Integer, Integer> nearestTuple = unvisited.poll();
             if (end.equals(nearestTuple)) {
                 Long timeEnd = System.currentTimeMillis();
-                System.out.println("Time passed: " + (timeEnd - timeStart) / 1000 + "s");
-                return distances.get(nearestTuple);
+                System.out.println("Time passed: " + (timeEnd - timeStart) + "ms");
+                return distances[nearestTuple._0][nearestTuple._1];
             }
 
             updateDistanceViaNeightbours(nearestTuple, unvisited, distances);
         }
+        return -1;
     }
 
-    private void updateDistanceViaNeightbours(Tuple<Integer, Integer> nearestTuple, PriorityQueue<Tuple<Integer, Integer>> unvisited, Map<Tuple<Integer, Integer>, Long> distances) {
-        Long nearestDist = distances.get(nearestTuple);
+    private void updateDistanceViaNeightbours(Tuple<Integer, Integer> nearestTuple, PriorityQueue<Tuple<Integer, Integer>> unvisited, long[][] distances) {
+        long nearestDist = distances[nearestTuple._0][nearestTuple._1];
         for (Tuple<Integer, Integer> currentVertex : getAdjacents(nearestTuple, width, height)) {
-            long temp = nearestDist + nodes.get(currentVertex);
-            if (temp < distances.get(currentVertex)) {
-                distances.put(currentVertex, temp);
+            long temp = nearestDist + nodes[currentVertex._0][currentVertex._1];
+            if (temp < distances[currentVertex._0][currentVertex._1]) {
+                distances[currentVertex._0][currentVertex._1] =  temp;
                 // We can just add the same vertex again with another (higher) priority
                 unvisited.add(currentVertex);
             }
