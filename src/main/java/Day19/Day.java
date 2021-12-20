@@ -18,7 +18,7 @@ public class Day extends AbstractDay {
     }
 
     public void solveDay() {
-        List<String> lines = InputUtils.readInBoardLines(getInputStream());
+        List<String> lines = InputUtils.readInLinesWithEmpties(getInputStream());
         beaconDetections = buildBeaconDetections(lines);
         solveFirstAndSecondQuestion();
     }

@@ -1,7 +1,6 @@
 package main.java.Common;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +14,7 @@ public class InputUtils {
                 .collect(Collectors.toList());
     }
 
-    public static List<String> readInBoardLines(InputStream stream) {
+    public static List<String> readInLinesWithEmpties(InputStream stream) {
         List<String> result = new ArrayList<>();
 
         try {
