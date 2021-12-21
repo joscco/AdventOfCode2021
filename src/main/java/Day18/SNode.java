@@ -40,14 +40,6 @@ public class SNode {
         return newNode;
     }
 
-    public String print() {
-        if(value != null) {
-            return value + "";
-        }
-
-        return "[" + left.print() + "," + right.print() + "]";
-    }
-
     public void increaseDepthByOne() {
         if (left != null) {
             left.increaseDepthByOne();
@@ -60,17 +52,9 @@ public class SNode {
         SNode root = this;
         while (true) {
             if (checkLeftExplosions()) {
-                System.out.println("After Left Explode");
-                System.out.println(root.print());
             } else if (checkRightExplosions()) {
-                System.out.println("After Right Explode");
-                System.out.println(root.print());
             } else if (checkLeftSplits()) {
-                System.out.println("After Left Split");
-                System.out.println(root.print());
             } else if (checkRightSplits()) {
-                System.out.println("After Right Split");
-                System.out.println(root.print());
             } else {
                 break;
             }
@@ -133,7 +117,6 @@ public class SNode {
         if (left.value != null && right.value != null) {
             // Case 0: Explodable SNode with two values
             if (depth > 4) {
-                System.out.println(print());
                 Tuple<Integer, Integer> result = new Tuple<>(left.value, right.value);
                 value = 0;
                 left = null;
