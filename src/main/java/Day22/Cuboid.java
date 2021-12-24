@@ -1,25 +1,6 @@
 package main.java.Day22;
 
-public class Cuboid {
-    int xMin;
-    int xMax;
-    int yMin;
-    int yMax;
-    int zMin;
-    int zMax;
-    boolean on;
-
-    public Cuboid() {}
-
-    public Cuboid(int xMin, int xMax, int yMin, int yMax, int zMin, int zMax, boolean on) {
-        this.xMin = xMin;
-        this.xMax = xMax;
-        this.yMin = yMin;
-        this.yMax = yMax;
-        this.zMin = zMin;
-        this.zMax = zMax;
-        this.on = on;
-    }
+public record Cuboid(int xMin, int xMax, int yMin, int yMax, int zMin, int zMax, boolean on) {
 
     public Cuboid buildIntersectionWith(Cuboid cuboid) {
         if (!this.intersectsWith(cuboid)) {

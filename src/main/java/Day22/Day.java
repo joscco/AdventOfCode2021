@@ -31,7 +31,7 @@ public class Day extends AbstractDay {
         for (Cuboid newCuboid : cuboids) {
             List<Cuboid> balancingCuboids = new ArrayList<>();
 
-            if (newCuboid.on) {
+            if (newCuboid.on()) {
                 // Add one weight for each new on cuboid point
                 balancingCuboids.add(newCuboid);
             }
@@ -67,9 +67,7 @@ public class Day extends AbstractDay {
     private List<Cuboid> buildCuboids(List<String> lines) {
         List<Cuboid> result = new ArrayList<>();
         for (String line : lines) {
-            Cuboid cuboid = new Cuboid();
             String[] lineArr = line.split(" ");
-            cuboid.on = lineArr[0].equals("on");
 
             String[] limitArr = lineArr[1].split(",");
             int[] values = Arrays.stream(limitArr)
@@ -78,13 +76,12 @@ public class Day extends AbstractDay {
                     .flatMap(Stream::of)
                     .mapToInt(Integer::parseInt)
                     .toArray();
-            cuboid.xMin = values[0];
-            cuboid.xMax = values[1];
-            cuboid.yMin = values[2];
-            cuboid.yMax = values[3];
-            cuboid.zMin = values[4];
-            cuboid.zMax = values[5];
 
+            Cuboid cuboid = new Cuboid(
+                    values[0], values[1],
+                    values[2], values[3],
+                    values[4], values[5],
+                    lineArr[0].equals("on"));
             result.add(cuboid);
 
         }
@@ -100,5 +97,4 @@ public class Day extends AbstractDay {
         System.out.println("Part 2:");
         System.out.println(cuboids.stream().mapToLong(Cuboid::volume).sum());
     }
-
 }
